@@ -8,6 +8,7 @@ import (
 	"github.com/redblood-pixel/learning-service-go/pkg/config"
 	"github.com/redblood-pixel/learning-service-go/pkg/handler"
 	"github.com/redblood-pixel/learning-service-go/pkg/repository"
+	gorm_repo "github.com/redblood-pixel/learning-service-go/pkg/repository/gorm"
 	"github.com/redblood-pixel/learning-service-go/pkg/server"
 	"github.com/redblood-pixel/learning-service-go/pkg/service"
 	"github.com/sirupsen/logrus"
@@ -19,7 +20,7 @@ func Run() {
 
 	fmt.Println(cfg.Auth.JWT.AccessTokenExpiryTime)
 
-	postgres_db, err := repository.NewPostgresDB(cfg)
+	postgres_db, err := gorm_repo.NewDB(&cfg.PostgresDB)
 	if err != nil {
 		logrus.Error(err)
 		return
@@ -29,7 +30,11 @@ func Run() {
 
 	hasher := hash.NewHasher(cfg.Auth.PasswordSalt)
 
-	repos := repository.NewRepositories(&postgres_db)
+	repos, err := repository.NewRepositories(postgres_db)
+	if err != nil {
+		logrus.Error(err)
+		return
+	}
 
 	srvc := service.NewService(service.Dependencies{
 		Repos:        repos,
