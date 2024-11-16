@@ -9,17 +9,23 @@ import (
 	"github.com/redblood-pixel/learning-service-go/pkg/domain"
 )
 
+type Config struct {
+	AccessTokenTTL  time.Duration `mapstructure:"access_token_expiry_time"`
+	RefreshTokenTTL time.Duration `mapstructure:"refresh_token_expiry_time"`
+	SigningKey      string        `mapstructure:"signing_key"`
+}
+
 type TokenManager struct {
 	signingKey        []byte
 	accessExpireTime  time.Duration
 	refreshExpireTime time.Duration
 }
 
-func NewTokenManager(accessttl time.Duration, refreshttl time.Duration, secret string) *TokenManager {
+func NewTokenManager(cfg *Config) *TokenManager {
 	return &TokenManager{
-		accessExpireTime:  accessttl,
-		refreshExpireTime: refreshttl,
-		signingKey:        []byte(secret),
+		accessExpireTime:  cfg.AccessTokenTTL,
+		refreshExpireTime: cfg.RefreshTokenTTL,
+		signingKey:        []byte(cfg.SigningKey),
 	}
 }
 

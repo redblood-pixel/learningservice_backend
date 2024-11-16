@@ -22,7 +22,7 @@ type Dictionary interface {
 }
 
 type Dependencies struct {
-	Repos        *repository.Repositories
+	Repos        *repository.Repository
 	Hasher       *hash.PasswordHasher
 	TokenManager *tokenutil.TokenManager
 }

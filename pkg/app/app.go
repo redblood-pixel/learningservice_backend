@@ -8,7 +8,7 @@ import (
 	"github.com/redblood-pixel/learning-service-go/pkg/config"
 	"github.com/redblood-pixel/learning-service-go/pkg/handler"
 	"github.com/redblood-pixel/learning-service-go/pkg/repository"
-	gorm_repo "github.com/redblood-pixel/learning-service-go/pkg/repository/gorm"
+	postgres_repo "github.com/redblood-pixel/learning-service-go/pkg/repository/postgres"
 	"github.com/redblood-pixel/learning-service-go/pkg/server"
 	"github.com/redblood-pixel/learning-service-go/pkg/service"
 	"github.com/sirupsen/logrus"
@@ -18,21 +18,20 @@ func Run() {
 
 	cfg := config.NewCfg()
 
-	fmt.Println(cfg.Auth.JWT.AccessTokenExpiryTime)
-
-	postgres_db, err := gorm_repo.NewDB(&cfg.PostgresDB)
+	postgres_db, err := postgres_repo.NewPostgresDB(&cfg.DB)
 	if err != nil {
-		logrus.Error(err)
+		logrus.Errorf("error occured while creating postgres_db: %v", err)
 		return
 	}
+	fmt.Println(postgres_db)
 
-	tokenManager := tokenutil.NewTokenManager(cfg.Auth.JWT.AccessTokenExpiryTime, cfg.Auth.JWT.RefreshTokenExpiryTime, cfg.Auth.JWT.SigningKey)
+	tokenManager := tokenutil.NewTokenManager(&cfg.JWT)
 
-	hasher := hash.NewHasher(cfg.Auth.PasswordSalt)
+	hasher := hash.NewHasher(&cfg.Auth)
 
-	repos, err := repository.NewRepositories(postgres_db)
+	repos, err := repository.NewRepository(postgres_db)
 	if err != nil {
-		logrus.Error(err)
+		logrus.Errorf("error occured while creating repostirory: %v", err)
 		return
 	}
 
@@ -44,7 +43,7 @@ func Run() {
 
 	handlers := handler.NewHandler(srvc, tokenManager)
 
-	srv := server.NewServer(cfg, handlers.Init())
+	srv := server.NewServer(&cfg.HTTP, handlers.Init())
 
 	srv.Run()
 }

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/redblood-pixel/learning-service-go/pkg/domain"
-	gorm_repo "github.com/redblood-pixel/learning-service-go/pkg/repository/gorm"
 	postgres_repo "github.com/redblood-pixel/learning-service-go/pkg/repository/postgres"
 )
 
@@ -24,22 +23,17 @@ type Dictionary interface {
 	Delete(wordId int) error
 }
 
-type Repositories struct {
+type Repository struct {
 	Users Users
 	Dict  Dictionary
 }
 
-func NewRepositories(db interface{}) (*Repositories, error) {
+func NewRepository(db interface{}) (*Repository, error) {
 	switch db := db.(type) {
 	case *domain.Database:
-		return &Repositories{
+		return &Repository{
 			Users: postgres_repo.NewUsersRepository(db),
 			Dict:  postgres_repo.NewDictRepository(db),
-		}, nil
-	case *domain.DatabaseORM:
-		return &Repositories{
-			Users: gorm_repo.NewUsersRepository(db),
-			Dict:  gorm_repo.NewDictRepository(db),
 		}, nil
 	default:
 		return nil, fmt.Errorf("can not create repositories: invalid db type - %T", db)
