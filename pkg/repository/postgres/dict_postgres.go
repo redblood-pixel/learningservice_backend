@@ -23,6 +23,7 @@ func (dr *DictRepository) GetAll() []domain.Word {
 
 	if err := dr.db.Select(&res, q); err != nil {
 		logrus.Error(err.Error())
+		return nil
 	}
 	fmt.Println(res)
 	return res
