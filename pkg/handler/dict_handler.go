@@ -93,7 +93,7 @@ func (h *Handler) deleteWord(ctx *gin.Context) {
 		return
 	}
 
-	err = h.service.DeleteWord(input.Id)
+	err = h.service.DeleteWord(input.ID)
 	if err != nil {
 		NewErrorResponse(ctx, http.StatusBadRequest, err.Error())
 		return

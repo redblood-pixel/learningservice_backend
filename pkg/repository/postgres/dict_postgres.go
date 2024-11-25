@@ -19,7 +19,7 @@ func NewDictRepository(db *domain.Database) *DictRepository {
 
 func (dr *DictRepository) GetAll() []domain.Word {
 	var res []domain.Word
-	q := "SELECT * FROM words"
+	q := fmt.Sprintf("SELECT * FROM %s", WordTable)
 
 	if err := dr.db.Select(&res, q); err != nil {
 		logrus.Error(err.Error())
@@ -29,9 +29,9 @@ func (dr *DictRepository) GetAll() []domain.Word {
 	return res
 }
 
-func (dr *DictRepository) Get(id int) (domain.Word, error) {
+func (dr *DictRepository) Get(wordID int) (domain.Word, error) {
 	var res domain.Word
-	q := fmt.Sprintf("SELECT * FROM words WHERE id=%d", id)
+	q := fmt.Sprintf("SELECT * FROM %s WHERE word_id=%d", WordTable, wordID)
 
 	if err := dr.db.Get(&res, q); err != nil {
 		logrus.Error(err)
@@ -43,7 +43,7 @@ func (dr *DictRepository) Get(id int) (domain.Word, error) {
 }
 
 func (dr *DictRepository) Create(word domain.CreateWordRequest) error {
-	q := fmt.Sprintf("INSERT INTO words (rus_word, translation) VALUES ('%s', '%s')", word.RusWord, word.Translation)
+	q := fmt.Sprintf("INSERT INTO %s (rus_word, translation) VALUES ('%s', '%s')", WordTable, word.RusWord, word.Translation)
 
 	_, err := dr.db.Exec(q)
 	logrus.Error(err)
@@ -51,15 +51,15 @@ func (dr *DictRepository) Create(word domain.CreateWordRequest) error {
 }
 
 func (dr *DictRepository) Update(word domain.Word) error {
-	q := fmt.Sprintf("UPDATE words SET rus_word = '%s', translation = '%s' WHERE id = '%d'", word.RusWord, word.Translation, word.Id)
+	q := fmt.Sprintf("UPDATE %s SET rus_word = '%s', translation = '%s' WHERE word_id = '%d'", WordTable, word.RusWord, word.Translation, word.ID)
 
 	_, err := dr.db.Exec(q)
 	logrus.Error(err)
 	return err
 }
 
-func (dr *DictRepository) Delete(wordId int) error {
-	q := fmt.Sprintf("DELETE FROM words WHERE id = '%d'", wordId)
+func (dr *DictRepository) Delete(wordID int) error {
+	q := fmt.Sprintf("DELETE FROM %s WHERE word_id = '%d'", WordTable, wordID)
 
 	_, err := dr.db.Exec(q)
 	logrus.Error(err)

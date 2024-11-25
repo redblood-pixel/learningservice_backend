@@ -1,6 +1,6 @@
 package domain
 
 type Group struct {
-	Id   int
+	ID   int
 	Name string
 }

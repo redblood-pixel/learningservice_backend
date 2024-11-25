@@ -18,6 +18,15 @@ type Config struct {
 	DBSSLMode  string `mapstructure:"db_sslmode"`
 }
 
+const (
+	GroupTable     = "group"
+	GroupUserTable = "group_user"
+	GroupWordTable = "group_word"
+	WordTable      = "word"
+	UserTable      = "user"
+	TokenTable     = "token"
+)
+
 func NewPostgresDB(cfg *Config) (*domain.Database, error) {
 
 	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",

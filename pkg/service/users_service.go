@@ -72,7 +72,7 @@ func (us *UsersService) Refresh(refreshInput domain.RefreshInput) (domain.Tokens
 	}
 
 	// create new session
-	return us.createSession(res.UserId)
+	return us.createSession(res.UserID)
 }
 
 func (us *UsersService) createSession(id int) (domain.TokensResponse, error) {

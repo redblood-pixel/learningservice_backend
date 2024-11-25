@@ -16,35 +16,33 @@ func NewUsersRepository(db *domain.Database) *UsersRepository {
 	return &UsersRepository{db: db}
 }
 
-func (ur *UsersRepository) Create(username, email, password string) (int, error) {
-	var id int
+func (ur *UsersRepository) Create(username, email, password string) (userID int, err error) {
 
-	q := fmt.Sprintf("INSERT INTO users (username, email, password_hash) VALUES ('%s', '%s', '%s') RETURNING id",
-		username, email, password)
+	q := fmt.Sprintf("INSERT INTO %s (username, email, password_hash) VALUES ('%s', '%s', '%s') RETURNING id",
+		UserTable, username, email, password)
 
 	row := ur.db.QueryRow(q)
-	if err := row.Scan(&id); err != nil {
+	if err = row.Scan(&userID); err != nil {
 		return 0, err
 	}
 
-	return id, nil
+	return
 }
 
-func (ur *UsersRepository) FindUserByEmail(email, password string) (int, error) {
-	var id int
+func (ur *UsersRepository) FindUserByEmail(email, password string) (userID int, err error) {
 
-	q := fmt.Sprintf("SELECT (id) FROM users WHERE email='%s' AND password_hash='%s'", email, password)
+	q := fmt.Sprintf("SELECT id FROM %s WHERE email='%s' AND password_hash='%s'", UserTable, email, password)
 
-	if err := ur.db.Get(&id, q); err != nil {
+	if err = ur.db.Get(&userID, q); err != nil {
 		return 0, err
 	}
-	return id, nil
+	return userID, nil
 }
 
-func (ur *UsersRepository) CreateSession(sessionId string, userId int, refreshTTL time.Duration) error {
+func (ur *UsersRepository) CreateSession(sessionId string, userID int, refreshTTL time.Duration) error {
 
-	q := fmt.Sprintf("INSERT INTO tokens (id, user_id, issued_at, expired_at) VALUES ('%s', %d, '%s', '%s') RETURNING id",
-		sessionId, userId, time.Now().Format(domain.TimeFormat), time.Now().Add(refreshTTL).Format(domain.TimeFormat))
+	q := fmt.Sprintf("INSERT INTO %s (id, user_id, issued_at, expired_at) VALUES ('%s', %d, '%s', '%s') RETURNING id",
+		TokenTable, sessionId, userID, time.Now().Format(domain.TimeFormat), time.Now().Add(refreshTTL).Format(domain.TimeFormat))
 
 	_, err := ur.db.Exec(q)
 	return err
@@ -53,8 +51,8 @@ func (ur *UsersRepository) CreateSession(sessionId string, userId int, refreshTT
 func (ur *UsersRepository) RemoveSession(sessionId string) (domain.RefreshToken, error) {
 
 	res := domain.RefreshToken{}
-	q1 := fmt.Sprintf("DELETE FROM tokens WHERE id='%s' RETURNING *", sessionId)
-	if err := ur.db.QueryRow(q1).Scan(&res.Id, &res.UserId, &res.IssuedAt, &res.ExpiresAt); err != nil {
+	q := fmt.Sprintf("DELETE FROM %s WHERE id='%s' RETURNING *", TokenTable, sessionId)
+	if err := ur.db.QueryRow(q).Scan(&res.ID, &res.UserID, &res.IssuedAt, &res.ExpiresAt); err != nil {
 		logrus.Error(err)
 		return domain.RefreshToken{}, domain.ErrNotAuthorized
 	}

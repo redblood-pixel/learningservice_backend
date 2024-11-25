@@ -7,13 +7,13 @@ import (
 )
 
 type JWTCustomClaims struct {
-	Id int
+	ID int
 	jwt.RegisteredClaims
 }
 
 type RefreshToken struct {
-	Id        string
-	UserId    int
+	ID        string
+	UserID    int
 	IssuedAt  time.Time
 	ExpiresAt time.Time
 }

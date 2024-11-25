@@ -29,9 +29,9 @@ func NewTokenManager(cfg *Config) *TokenManager {
 	}
 }
 
-func (tm *TokenManager) CreateAccessToken(userId int) (string, error) {
+func (tm *TokenManager) CreateAccessToken(userID int) (string, error) {
 	claims := domain.JWTCustomClaims{
-		Id: userId,
+		ID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(tm.accessExpireTime)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -59,7 +59,7 @@ func (tm *TokenManager) ParseAccessToken(tokenString string) (int, error) {
 	}
 
 	if claims, ok := token.Claims.(*domain.JWTCustomClaims); ok && token.Valid {
-		return claims.Id, nil
+		return claims.ID, nil
 	}
 	return 0, fmt.Errorf("access token not valid")
 }
