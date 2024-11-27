@@ -11,21 +11,32 @@ import (
 type Users interface {
 	Create(username, email, password string) (int, error)
 	FindUserByEmail(username, password string) (int, error)
-	CreateSession(sessionId string, userId int, refreshTTL time.Duration) error
-	RemoveSession(sessionId string) (domain.RefreshToken, error)
+	CreateSession(sessionID string, userId int, refreshTTL time.Duration) error
+	RemoveSession(sessionID string) (domain.RefreshToken, error)
 }
 
 type Dictionary interface {
 	GetAll() []domain.Word
-	Get(id int) (domain.Word, error)
+	Get(wordID int) (domain.Word, error)
 	Create(word domain.CreateWordRequest) error
 	Update(word domain.Word) error
-	Delete(wordId int) error
+	Delete(wordID int) error
+}
+
+type Group interface {
+	GetAll() []domain.Group
+	Get(groupID int) (domain.Group, error)
+	Create(word domain.CreateGroupRequest) (int, error)
+	Update(word domain.Group) error
+	Delete(groupID int) error
+	WordsInGroup(groupID int) ([]domain.Word, error)
+	GroupsOfUser(userID int) ([]domain.Group, error)
 }
 
 type Repository struct {
 	Users Users
 	Dict  Dictionary
+	Group Group
 }
 
 func NewRepository(db interface{}) (*Repository, error) {

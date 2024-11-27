@@ -61,11 +61,11 @@ func (gr *GroupsRepository) Get(groupID int) (res domain.Group, err error) {
 }
 
 // Join queries
-// Как лучше всего хранить sql запросы
-// Как быть менее зависимым от имен таблиц
-// Правильно ли хранить sql запросы на гитхабе
+// ? Как лучше всего хранить sql запросы
+// ? Как быть менее зависимым от имен таблиц
+// ? Правильно ли хранить sql запросы на гитхабе
 
-func (gr *GroupsRepository) GetUserGroups(userID int) (res []domain.Group, err error) {
+func (gr *GroupsRepository) GroupsOfUser(userID int) (res []domain.Group, err error) {
 	q := fmt.Sprintf(`SELECT group_id, name_group FROM %s
 		INNER JOIN %s ON group_user.group_id = group.group_id WHERE user_id = %d`, GroupUserTable, GroupTable, userID)
 	fmt.Println(q)
@@ -76,7 +76,7 @@ func (gr *GroupsRepository) GetUserGroups(userID int) (res []domain.Group, err e
 	return
 }
 
-func (gr *GroupsRepository) GetWordsInGroup(groupID int) (res []domain.Word, err error) {
+func (gr *GroupsRepository) WordsInGroup(groupID int) (res []domain.Word, err error) {
 	q := fmt.Sprintf(`SELECT word_id, rus_word, translation FROM %s
 		INNER JOIN %s ON group_word.word_id = word.word_id WHERE group_id = %d`, GroupWordTable, WordTable, groupID)
 	if err = gr.db.Select(&res, q); err != nil {

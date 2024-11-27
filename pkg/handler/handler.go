@@ -26,6 +26,11 @@ func (h *Handler) Init() *gin.Engine {
 
 	// Init users routes
 
+	// TODO Filtration and pagination
+	// TODO Testing covering
+	// TODO add minio
+	// TODO add cache
+
 	router.GET("ping", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"status": "work",
@@ -41,6 +46,7 @@ func (h *Handler) Init() *gin.Engine {
 	{
 		protectedRouter.GET("/ping", h.AuthPing)
 		h.initDictRoutes(protectedRouter)
+		h.initGroupRoutes(protectedRouter)
 	}
 
 	return router
