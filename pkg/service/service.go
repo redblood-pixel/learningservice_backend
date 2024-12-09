@@ -7,6 +7,8 @@ import (
 	"github.com/redblood-pixel/learning-service-go/pkg/repository"
 )
 
+//go:generate mockgen -source=service.go -destination=mocks/mock.go
+
 type Users interface {
 	SignUp(user domain.SignupInput) (domain.TokensResponse, error)
 	SignIn(user domain.SigninInput) (domain.TokensResponse, error)

@@ -4,7 +4,7 @@ http:
   context_timeout: 10s
 
 postgres:
-  db_host: localhost
+  db_host: db
   db_port: 5432
   db_user: postgres
   db_name: learning_service
