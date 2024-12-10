@@ -1,6 +1,6 @@
 http:
-  server_address: "8000"
-  server_port: "8000"
+  server_address: "8091"
+  server_port: "8091"
   context_timeout: 10s
 
 postgres:
