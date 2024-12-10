@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redblood-pixel/learning-service-go/internal/tokenutil"
 	"github.com/redblood-pixel/learning-service-go/pkg/handler/middleware"
@@ -23,6 +24,7 @@ func NewHandler(s *service.Service, tokenManager *tokenutil.TokenManager) *Handl
 
 func (h *Handler) Init() *gin.Engine {
 	router := gin.New()
+	router.Use(cors.Default())
 
 	// Init users routes
 
