@@ -3,6 +3,9 @@ FROM golang:latest
 RUN go version
 ENV GOPATH=/
 
+COPY go.mod .
+COPY go.sum .
+
 COPY ./ ./
 
 RUN go mod download
